@@ -1,10 +1,12 @@
 import cv2
 import os
 
-
 # Get Username to create target_path
-name = input ("Input your username: ")
+#name = input ("Input your username: ")
+name = "Samson"
 target_path = os.path.join (os.path.abspath(os.getcwd()), "dataset", name)
+if not os.path.exists (target_path):
+    os.makedirs (target_path)
 print (target_path)
 
 
@@ -23,25 +25,25 @@ while True:
         break
     cv2.imshow("press space to take a photo", frame)
 
+    #-------------------------EVENT HANDLING---------------------------
     k = cv2.waitKey(1)
+    # ESC pressed
     if k%256 == 27:
-        # ESC pressed
         print("Escape hit, closing...")
         break
+    
+    
+    # SPACE pressed
     elif k%256 == 32:
-        # SPACE pressed
-        img_name = target_path.join ("image_{}.jpg".format(img_counter))
+        img_name = target_path + "/image_" + str (img_counter) + ".jpg"
 	
-        print("Writing into {}...".format(img_name))
-
-#if not cv2.imwrite(img_name, frame):
-#           raise Exception("Could not write image")
-        if not cv2.imwrite(img_name, img):
-            raise Exception("Could not write image")
-        else:
+        if cv2.imwrite(img_name, frame):
             print("{} written!".format(img_name))
             img_counter += 1
+    #------------------------------------------------------------------
 
+
+
+# Cleaning up...
 cam.release()
-
 cv2.destroyAllWindows()

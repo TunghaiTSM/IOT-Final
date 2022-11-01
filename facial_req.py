@@ -14,7 +14,7 @@ encodingsP = "encodings.pickle"
 # load the known faces and embeddings along with OpenCV's Haar
 # cascade for face detection
 print("[INFO] loading encodings + face detector...")
-data = pickle.loads(open(encodingsP, "rb").read())
+data = pickle.loads(open(encodingsP, "rb").read(), encoding='latin1')
 
 # initialize the video stream and allow the camera sensor to warm up
 # Set the ser to the followng
@@ -32,7 +32,10 @@ while True:
 	# grab the frame from the threaded video stream and resize it
 	# to 500px (to speedup processing)
 	frame = vs.read()
-	frame = imutils.resize(frame, width=500)
+
+    # Comment out the resize to speedup
+	#frame = imutils.resize(frame, width=500)
+
 	# Detect the fce boxes
 	boxes = face_recognition.face_locations(frame)
 	# compute the facial embeddings for each face bounding box
