@@ -33,7 +33,7 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm install @notionhq/client
       
-      - run: node index.js        
+      - run: node scripts/index.js        
         env: 
             GITHUB_KEY: ${{ secrets.JSL_GITHUB_KEY }}
             NOTION_KEY: ${{ secrets.JSL_NOTION_KEY }}
