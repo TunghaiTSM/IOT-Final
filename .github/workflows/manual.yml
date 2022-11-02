@@ -40,4 +40,4 @@ jobs:
             NOTION_DATABASE_ID: ${{ secrets.JSL_NOTION_DB_ID }}
             GITHUB_REPO_OWNER: TunghaiTSM
             GITHUB_REPO_NAME: IOT-Final
-      - run: node IOT-Final/index.js
+      - run: node index.js
