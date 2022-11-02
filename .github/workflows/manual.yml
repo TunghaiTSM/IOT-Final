@@ -33,11 +33,12 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm install @notionhq/client
       
-        
+      - run: node index.js        
         env: 
             GITHUB_KEY: ${{ secrets.JSL_GITHUB_KEY }}
             NOTION_KEY: ${{ secrets.JSL_NOTION_KEY }}
             NOTION_DATABASE_ID: ${{ secrets.JSL_NOTION_DB_ID }}
             GITHUB_REPO_OWNER: TunghaiTSM
             GITHUB_REPO_NAME: IOT-Final
-      - run: node index.js
+
+
