@@ -2,8 +2,8 @@ import cv2
 import os
 
 # Get Username to create target_path
-#name = input ("Input your username: ")
-name = "Samson"
+name = input ("Input your username: ")
+#name = "Samson"
 target_path = os.path.join (os.path.abspath(os.getcwd()), "dataset", name)
 if not os.path.exists (target_path):
     os.makedirs (target_path)
