@@ -32,7 +32,7 @@ jobs:
       - run: git checkout main
       - uses: actions/setup-node@v3
       - run: npm install @notionhq/client
-      
+      - run: npm install dotenv octokit lodash
       - run: node scripts/index.js        
         env: 
             GITHUB_KEY: ${{ secrets.JSL_GITHUB_KEY }}
