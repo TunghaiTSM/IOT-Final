@@ -1,105 +1,47 @@
-from imutils.video import VideoStream
-from imutils.video import FPS
-import face_recognition
-import imutils
-import pickle
-import time
 import cv2
+import numpy as np
+import os
+from PIL import Image, ImageDraw, ImageFont
 
-#Initialize 'currentname' to trigger only when a new person is identified.
-currentname = "unknown"
-#Determine faces from encodings.pickle file model created from train_model.py
-encodingsP = "models/encodings.pickle"
-
-# load the known faces and embeddings along with OpenCV's Haar
-# cascade for face detection
-print("[INFO] loading encodings + face detector...")
-data = pickle.loads(open(encodingsP, "rb").read(), encoding='latin1')
-
-# initialize the video stream and allow the camera sensor to warm up
-# Set the ser to the followng
-# src = 0 : for the build in single web cam, could be your laptop webcam
-# src = 2 : I had to set it to 2 inorder to use the USB webcam attached to my laptop
-vs = VideoStream(src=0, framerate=10).start()
-#vs = VideoStream(usePiCamera=True).start()
-time.sleep(2.0)
-
-# start the FPS counter
-fps = FPS().start()
-
-# loop over frames from the video file stream
+recognizer = cv2.face.LBPHFaceRecognizer_create()  #使用舊版opencv-contrib-python，例如：版本3.4.3.18
+recognizer.read('models/train.yml')
+cascadePath = "src/haarcascade_frontalface_default.xml"
+faceCascade = cv2.CascadeClassifier(cascadePath);
+font = ImageFont.truetype('NotoSerifCJK-Regular.ttc', 40)  #sudo apt-get install fonts-noto-cjk
+id = 0
+names = ['None', 'TaLen', 'JSL'] #id為1，對應名字為建庭
+camema = cv2.VideoCapture(0)
+camema.set(3, 640) # 設定影片寬度
+camema.set(4, 480) # 設定影片高度
+minW = 0.1*camema.get(3)
+minH = 0.1*camema.get(4)
+blue = (255,0,0)
+green = (0,255,0)
+red = (0,0,255)
 while True:
-    # grab the frame from the threaded video stream and resize it
-    # to 500px (to speedup processing)
-    frame = vs.read()
-
-    # Comment out the resize to speedup
-    #frame = imutils.resize(frame, width=500)
-
-    # Detect the fce boxes
-    boxes = face_recognition.face_locations(frame)
-    # compute the facial embeddings for each face bounding box
-    encodings = face_recognition.face_encodings(frame, boxes)
-    names = []
-
-    # loop over the facial embeddings
-    for encoding in encodings:
-        # attempt to match each face in the input image to our known
-        # encodings
-        matches = face_recognition.compare_faces(data["encodings"], encoding)
-        name = "Unknown"  #if face is not recognized, then print Unknown
-
-        # check to see if we have found a match
-        if True in matches:
-            # find the indexes of all matched faces then initialize a
-            # dictionary to count the total number of times each face
-            # was matched
-            matchedIdxs = [i for (i, b) in enumerate(matches) if b]
-            counts = {}
-
-            # loop over the matched indexes and maintain a count for
-            # each recognized face face
-            for i in matchedIdxs:
-                name = data["names"][i]
-                counts[name] = counts.get(name, 0) + 1
-
-            # determine the recognized face with the largest number
-            # of votes (note: in the event of an unlikely tie Python
-            # will select first entry in the dictionary)
-            name = max(counts, key=counts.get)
-
-            #If someone in your dataset is identified, print their name on the screen
-            if currentname != name:
-                currentname = name
-                print(currentname)
-
-        # update the list of names
-        names.append(name)
-
-    # loop over the recognized faces
-    for ((top, right, bottom, left), name) in zip(boxes, names):
-        # draw the predicted face name on the image - color is in BGR
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 225), 2)
-        y = top - 15 if top - 15 > 15 else top + 15
-        cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, .8,
-                    (0, 255, 255), 2)
-
-    # display the image to our screen
-    cv2.imshow("Facial Recognition is Running", frame)
-    key = cv2.waitKey(1) & 0xFF
-
-    # quit when 'q' key is pressed
-    if key == ord("q"):
+    ret, img = camema.read()
+    img = cv2.flip(img, 1)
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    faces = faceCascade.detectMultiScale(gray, scaleFactor = 1.2, minNeighbors = 5, minSize = (int(minW), int(minH)) )
+    for(x,y,w,h) in faces:
+        cv2.rectangle(img, (x,y), (x+w,y+h), green, 2)
+        id, confidence = recognizer.predict(gray[y:y+h,x:x+w])
+        if (confidence < 65):
+            name = names[id]
+            confidence = str(100 - round(confidence)) +"%"
+        else:
+            name = "未知"
+            confidence = str(100 - round(confidence)) +"%" 
+        imgPIL = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB)) #cv2轉換成PIL 
+        draw = ImageDraw.Draw(imgPIL)
+        draw.text((x+5,y-5), str(name), font=font, fill=blue)  #使用PIL顯示中文
+        draw.text((x+5,y+h-5), str(confidence), font=font, fill=red)
+        img = cv2.cvtColor(np.asarray(imgPIL),cv2.COLOR_RGB2BGR) #PIL轉換成cv2
+    cv2.imshow('image',img) 
+    k = cv2.waitKey(10) & 0xff #等待0.01秒
+    if k == 27:
         break
 
-    # update the FPS counter
-    fps.update()
-
-# stop the timer and display FPS information
-fps.stop()
-print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
-
-# do a bit of cleanup
+print("\n程式結束")
+camema.release()
 cv2.destroyAllWindows()
-vs.stop()
