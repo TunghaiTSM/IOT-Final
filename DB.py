@@ -12,14 +12,8 @@ class AWS_DB:
 	dbname = "MQTT"
 	tbname = "identify"
 	__description = "Sent from my RPI 3."
-	region = "us-east-1"
 
 	def __init__ (self):
-		self.client = boto3.client ('rds')
-		token = self.client.generate_db_auth_token(DBHostname=self.host, 
-							Port=self.port, 
-							DBUsername=self.username, 
-							Region=self.region)
 		self.dbconnection = mysql.connector.connect(host = self.host, 
 								user = self.username, 
 								password = self.password, 
@@ -41,6 +35,5 @@ class AWS_DB:
 	def __del__ (self):
 		#print ("Cleaning up...")
 		self.dbconnection.close ()
-	#def drive(self):
-		#self.write_data("talen", "C")
-#AWS_DB().drive()
+
+AWS_DB().write_data("Talen", "HAHAHAHAHAHAHAHAHAHA")
