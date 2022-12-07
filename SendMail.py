@@ -1,6 +1,6 @@
 import boto3
 import json
-import botocore
+
 class SendMail:
     TargetARN = "arn:aws:sns:us-east-1:999698209796:IOT_DHT11"
     def __init__(self):
