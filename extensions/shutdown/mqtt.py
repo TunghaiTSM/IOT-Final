@@ -12,7 +12,7 @@ class MQTT:
     port=1883
     topic = "test/mqtt"
 
-    def __init__ (self, client_name, on_message_callback=0):
+    def __init__ (self, client_name, on_message_callback):
         self.client= paho.Client(client_name)             #create client object
         #print ("Init object", self.client)
         self.client.on_message = on_message_callback

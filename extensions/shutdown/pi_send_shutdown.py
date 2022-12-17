@@ -1,4 +1,7 @@
 from mqtt import MQTT
 
-client = MQTT ("PI")
-client.publish ("TEST")
+class Shutdown:
+
+    def now ():
+        client = MQTT ("PI")
+        client.publish ("TEST")

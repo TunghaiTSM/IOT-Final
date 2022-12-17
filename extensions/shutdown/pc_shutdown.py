@@ -1,4 +1,4 @@
-from os import system
+import os
 from time import sleep
 from plyer import notification
 from time import sleep
@@ -20,9 +20,9 @@ def shutdown(client, userdata, result):
                 )
         sleep(1)
 
-    #system("shutdown -P now")
+    system("shutdown -h now")
     pass
 
 # Driver code
-client = MQTT("PC", shutdown)
+client = MQTT("PC", on_message_callback = shutdown)
 client.subscribe()
