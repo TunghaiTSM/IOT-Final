@@ -20,7 +20,7 @@ while(True):
     k = cv2.waitKey(100) & 0xff #等待0.1秒，偵測鍵盤按鍵是否按下
     if k == 27:#按下ESC按鍵，中斷while迴圈
         break
-    elif count >= 60: # 偵測30張臉後，中斷while迴圈
+    elif count >= 240: # 偵測30張臉後，中斷while迴圈
          break
 print("\n 偵測完成")
 camema.release()
