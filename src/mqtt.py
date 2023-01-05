@@ -8,7 +8,7 @@ import time
 
 class MQTT:
     message = "------------------------------\nTesting MQTT Server in Python.\n------------------------------"
-    broker="34.238.232.106"
+    broker="18.206.203.135"
     port=1883
     topic = "test/mqtt"
 
