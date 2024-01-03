@@ -16,3 +16,7 @@ Webcam 	-> 	Raspberry Pi 	-> Amazon RDS	-> Amazon QuickSight
 
 # Note
 如果不用make在這個專案的根目錄裡跑，會出現路徑對不上的問題，所以要小心。
+
+
+## Alternatives
+https://github.com/Qengineering/Face-Recognition-Raspberry-Pi-64-bits 

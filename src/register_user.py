@@ -1,49 +1,27 @@
 import cv2
 import os
-
-# Get Username to create target_path
-name = input ("Input your username: ")
-#name = "Samson"
-target_path = os.path.join (os.path.abspath(os.getcwd()), "dataset", name)
-if not os.path.exists (target_path):
-    os.makedirs (target_path)
-print (target_path)
-
-
-# Start capturing headshots
-cam = cv2.VideoCapture(0)
-
-cv2.namedWindow("press space to take a photo", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("press space to take a photo", 500, 300)
-
-img_counter = 0
-
-while True:
-    ret, frame = cam.read()
-    if not ret:
-        print("failed to grab frame")
+camema = cv2.VideoCapture(0)  #對應/dev/video0的攝影機
+camema.set(3, 640) # 設定影片寬度
+camema.set(4, 480) # 設定影片高度
+detector = cv2.CascadeClassifier('src/haarcascade_frontalface_default.xml')
+id = input('\n請輸入id？')
+print("\n 初始化錄影機，請等待")
+count = 0
+while(True):
+    ret, img = camema.read()
+    img = cv2.flip(img, 1) #設定影像左右互換
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  #轉換成灰階
+    faces = detector.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)  #辨識影像
+    for (x,y,w,h) in faces:
+        cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)     #加上綠框
+        count += 1
+        cv2.imwrite("dataset/User." + str(id) + '.' + str(count) + ".jpg", gray[y:y+h,x:x+w])  #儲存影像到dataset資料夾
+        cv2.imshow('image', img)
+    k = cv2.waitKey(100) & 0xff #等待0.1秒，偵測鍵盤按鍵是否按下
+    if k == 27:#按下ESC按鍵，中斷while迴圈
         break
-    cv2.imshow("press space to take a photo", frame)
-
-    #-------------------------EVENT HANDLING---------------------------
-    k = cv2.waitKey(1)
-    # ESC pressed
-    if k%256 == 27:
-        print("Escape hit, closing...")
-        break
-    
-    
-    # SPACE pressed
-    elif k%256 == 32:
-        img_name = target_path + "/image_" + str (img_counter) + ".jpg"
-	
-        if cv2.imwrite(img_name, frame):
-            print("{} written!".format(img_name))
-            img_counter += 1
-    #------------------------------------------------------------------
-
-
-
-# Cleaning up...
-cam.release()
+    elif count >= 240: # 偵測30張臉後，中斷while迴圈
+         break
+print("\n 偵測完成")
+camema.release()
 cv2.destroyAllWindows()
